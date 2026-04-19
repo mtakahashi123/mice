@@ -32,7 +32,7 @@ mice.impute.svm <- function(y, ry, x, wy = NULL, type = NULL, C = 1, scaled = TR
   if (is.null(wy)) wy <- !ry
   n_target <- sum(wy)
   
-  # 1. Bootstrap for estimation uncertainty (Takahashi, 2026, Section 2.2, Step 1)
+  # 1. Bootstrap for estimation uncertainty (Takahashi, 2026, Section 3.3, Steps 1-2)
   xobs <- x[ry, , drop = FALSE]
   yobs <- y[ry]
   n1 <- sum(ry)
@@ -45,7 +45,7 @@ mice.impute.svm <- function(y, ry, x, wy = NULL, type = NULL, C = 1, scaled = TR
   # Initialize draw with NAs
   draw <- rep(NA, n_target)
   
-  # 2. SVM Model Training (Takahashi, 2026, Section 2.2, Step 2)
+  # 2. SVM Model Training (Takahashi, 2026, Section 3.3, Step 3)
   if (length(unique(y_star)) == 2) {
     result <- tryCatch({
       svm.model <- NULL
@@ -68,7 +68,7 @@ mice.impute.svm <- function(y, ry, x, wy = NULL, type = NULL, C = 1, scaled = TR
         )
       )
       
-  # 3. Predict probabilities for fundamental uncertainty (Takahashi, 2026, Section 2.2, Step 3)
+  # 3. Predict probabilities for fundamental uncertainty (Takahashi, 2026, Section 3.3, Step 4)
       p_mat <- NULL
       utils::capture.output(
         p_mat <- suppressWarnings(
@@ -78,7 +78,7 @@ mice.impute.svm <- function(y, ry, x, wy = NULL, type = NULL, C = 1, scaled = TR
         )
       )
       
-  # 4. Stochastic drawing (Takahashi, 2026, Section 2.2, Step 4)
+  # 4. Stochastic drawing (Takahashi, 2026, Section 3.3, Step 5)
       # Extract probabilities for the positive class (assumed to be the 2nd column).
       p <- p_mat[, 2]
       as.integer(runif(length(p)) <= p)
